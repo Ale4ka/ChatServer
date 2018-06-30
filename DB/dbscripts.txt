@@ -1,5 +1,5 @@
 # у каждого юзера свой логин
-db.users.createIndex(
+db.Users.createIndex(
      { Login: 1},
      { unique: true }
   );
