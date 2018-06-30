@@ -7,32 +7,44 @@ exports.login = function (request, response) {
         if (err) throw err;
         let db = client.db("ezWebChat");
         let AuthInfo = {
-            Login: request.body["Login"],
-            PasswordHash: request.body["PasswordHash"]
+            Login: request.query["Login"],
+            PasswordHash: request.query["PasswordHash"]
         };
+        let ip = request.query["Ip"];
         db.collection("Users").findOne({AuthInfo}, function (err, result) {
-            if (err) throw err;
-            console.log(result);
-            let authResponse;
-
-            if (result != null) {
-                authResponse = {
-                    IsAuthorized: true,
-                    ErrorReason: null,
-                    ErrorType: null,
-                    UserId: result["_id"],
-                    SessionToken: null
-                }
-            } else {
-                authResponse = {
-                    IsAuthorized: false,
-                    ErrorReason: "Wrong login/password",
-                    ErrorType: 1,
-                    UserId: null,
-                    SessionToken: null
-                }
+            if (err) {
+                response.send(JSON.stringify(
+                    {
+                        Token: null,
+                        IsAuthorized: false,
+                        ErrorType: 1,
+                        ErrorReason: "Wrong login/password"
+                    }
+                ));
+                return;
             }
-            response.send(JSON.stringify(authResponse));
+            console.log(result);
+
+            db.collection["Ip"].insertOne({Token: random(), Ip: ip, Login: AuthInfo["Login"]}, function (err, result) {
+                if (err) {
+                    response.send(JSON.stringify(
+                        {
+                            Token: null,
+                            IsAuthorized: false,
+                            ErrorType: 1,
+                            ErrorReason: "Wrong login/password"
+                        }
+                    ));
+                }
+
+                response.send(JSON.stringify({
+                    Token: random(),
+                    IsAuthorised: true,
+                    ErrorType: 0,
+                    ErrorReason: null
+                }))
+            });
+
 
         });
     })
