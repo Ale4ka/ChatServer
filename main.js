@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
+
 const port = 1234;
 const jsonParser = bodyParser.json();
 
@@ -22,4 +23,5 @@ app.post("/register", jsonParser, register.register);
 
 app.listen(port);
 console.log("listen on port: ", port);
- 
+
+

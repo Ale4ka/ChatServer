@@ -1,5 +1,7 @@
 const mongoClient = require("mongodb");
 const mongoUrl = "mongodb://localhost:27017/";
+const Crypto = require("crypto");
+
 exports.login = function (request, response) {
     if (!request.body) return response.sendStatus(400);
 
@@ -24,8 +26,13 @@ exports.login = function (request, response) {
                 return;
             }
             console.log(result);
-
-            db.collection["Ip"].insertOne({Token: random(), Ip: ip, Login: AuthInfo["Login"]}, function (err, result) {
+            let token = Crypto.randomBytes(16);
+            let newIpConnection = {
+                Token: token,
+                Ip: ip,
+                Login: AuthInfo["Login"]
+            };
+            db.collection("Ip").insertOne(newIpConnection, function (err, result) {
                 if (err) {
                     response.send(JSON.stringify(
                         {
@@ -38,7 +45,7 @@ exports.login = function (request, response) {
                 }
 
                 response.send(JSON.stringify({
-                    Token: random(),
+                    Token: token,
                     IsAuthorised: true,
                     ErrorType: 0,
                     ErrorReason: null
@@ -49,3 +56,5 @@ exports.login = function (request, response) {
         });
     })
 };
+
+
