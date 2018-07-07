@@ -9,12 +9,12 @@ exports.login = function (request, response) {
         if (err) throw err;
         let db = client.db("ezWebChat");
         let AuthInfo = {
-            Login: request.query["Login"],
-            PasswordHash: request.query["PasswordHash"]
+            Login: request.body["Login"],
+            PasswordHash: request.body["PasswordHash"]
         };
-        let ip = request.query["Ip"];
-        db.collection("Users").findOne({AuthInfo}, function (err, result) {
-            if (err) {
+        let ip = request.body["Ip"];
+        db.collection("Users").findOne({}, {AuthInfo}, function (err, result) {
+            if (err || result == null) {
                 response.send(JSON.stringify(
                     {
                         Token: null,
@@ -25,21 +25,20 @@ exports.login = function (request, response) {
                 ));
                 return;
             }
-            console.log(result);
             let token = Crypto.randomBytes(16);
             let newIpConnection = {
                 Token: token,
                 Ip: ip,
                 Login: AuthInfo["Login"]
             };
-            db.collection("Ip").insertOne(newIpConnection, function (err, result) {
+            db.collection("Connections").insertOne(newIpConnection, function (err, result) {
                 if (err) {
                     response.send(JSON.stringify(
                         {
                             Token: null,
                             IsAuthorized: false,
                             ErrorType: 1,
-                            ErrorReason: "Wrong login/password"
+                            ErrorReason: "Error at adding to connections"
                         }
                     ));
                 }

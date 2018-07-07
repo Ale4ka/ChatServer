@@ -10,10 +10,9 @@ exports.register = function (request, response) {
     let newUser = {
         Login: request.query["Login"],
         PasswordHash: request.query["PasswordHash"],
-        FirstName: request.query["FirstName"],
-        LastName: request.query["LastName"],
-        UserName: request.query["UserName"]
+        Name: request.query["Name"]
     };
+
 
     mongoClient.connect(mongoUrl, {useNewUrlParser: true}, function (err, client) {
         if (err) throw err;
