@@ -9,6 +9,8 @@ const jsonParser = bodyParser.json();
 //Подключение API
 const register = require('./App/Routes/register.js');
 const login = require('./App/Routes/login.js');
+const sendMessage = require('./App/Routes/sendMessage.js');
+const getMessages = require('./App/Routes/getMessages.js');
 
 app.get("/", function(request, response){
     response.sendfile("./App/Pages/debug.html");
@@ -20,6 +22,8 @@ app.get("/App/Styles/style.css", function (request, response) {
 
 app.post("/login", jsonParser, login.login);
 app.post("/register", jsonParser, register.register);
+app.post("/getMessages", jsonParser, getMessages.getMessages());
+app.post("/sendMessage", jsonParser, sendMessage.sendMessage());
 
 app.listen(port);
 console.log("listen on port: ", port);

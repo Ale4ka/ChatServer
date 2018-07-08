@@ -29,7 +29,7 @@ exports.login = function (request, response) {
             let newIpConnection = {
                 Token: token,
                 Ip: ip,
-                Login: AuthInfo["Login"]
+                Id: result["_id"]
             };
             db.collection("Connections").insertOne(newIpConnection, function (err, result) {
                 if (err) {
