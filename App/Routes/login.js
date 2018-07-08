@@ -14,7 +14,7 @@ exports.login = function (request, response) {
         };
         let ip = request.body["Ip"];
         db.collection("Users").findOne({}, {AuthInfo}, function (err, result) {
-            if (err || result == null) {
+            if (err || result == null || result["Login"] == null) {
                 response.send(JSON.stringify(
                     {
                         Token: null,
