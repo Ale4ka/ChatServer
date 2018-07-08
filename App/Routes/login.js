@@ -45,7 +45,7 @@ exports.login = function (request, response) {
 
                 response.send(JSON.stringify({
                     Token: token,
-                    IsAuthorised: true,
+                    IsAuthorized: true,
                     ErrorType: 0,
                     ErrorReason: null
                 }))
