@@ -1,6 +1,5 @@
 const mongoClient = require("mongodb");
 const mongoUrl = "mongodb://localhost:27017/";
-const Crypto = require("crypto");
 
 exports.login = function (request, response) {
     if (!request.body) return response.sendStatus(400);
@@ -13,8 +12,8 @@ exports.login = function (request, response) {
             PasswordHash: request.body["PasswordHash"]
         };
         let ip = request.body["Ip"];
-        db.collection("Users").findOne({}, {AuthInfo}, function (err, result) {
-            if (err || result == null || result["Login"] == null) {
+        db.collection("Users").findOne(AuthInfo, function (err, result) {
+            if (err || result == null) {
                 response.send(JSON.stringify(
                     {
                         Token: null,
@@ -25,7 +24,8 @@ exports.login = function (request, response) {
                 ));
                 return;
             }
-            let token = Crypto.randomBytes(16);
+
+            let token = generateToken(16);
             let newIpConnection = {
                 Token: token,
                 Ip: ip,
@@ -57,3 +57,12 @@ exports.login = function (request, response) {
 };
 
 
+function generateToken(length) {
+    let symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n'];
+    let token = "";
+    for (let i = 0; i < length; i++) {
+        let index = Math.trunc(Math.random() * symbols.length);
+        token += symbols[index];
+    }
+    return token;
+}

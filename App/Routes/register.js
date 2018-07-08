@@ -8,9 +8,9 @@ exports.register = function (request, response) {
     if (!request.body) return response.sendStatus(400);
 
     let newUser = {
-        Login: request.query["Login"],
-        PasswordHash: request.query["PasswordHash"],
-        Name: request.query["Name"]
+        Login: request.body["Login"],
+        PasswordHash: request.body["PasswordHash"],
+        Name: request.body["Name"]
     };
 
 
