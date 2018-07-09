@@ -15,7 +15,7 @@ exports.getMessages = function (request, response) {
             if (err || result == null) {
                 response.send(JSON.stringify(
                     {
-                        IsGot: false,
+                        Success: false,
                         Content: null,
                         ErrorType: 1,
                         ErrorReason: "Wrong token"
@@ -27,7 +27,7 @@ exports.getMessages = function (request, response) {
                 if (err || result == null) {
                     response.send(JSON.stringify(
                         {
-                            IsGot: false,
+                            Success: false,
                             Content: null,
                             ErrorType: 2,
                             ErrorReason: "Wrong token record"
@@ -40,7 +40,7 @@ exports.getMessages = function (request, response) {
                         if (err || result == null) {
                             response.send(JSON.stringify(
                                 {
-                                    IsGot: false,
+                                    Success: false,
                                     Content: null,
                                     ErrorType: 4,
                                     ErrorReason: "Chat or messages doesn't exist"
@@ -51,7 +51,7 @@ exports.getMessages = function (request, response) {
 
                             response.send(JSON.stringify(
                                 {
-                                    IsGot: true,
+                                    Success: true,
                                     Content: messages,
                                     ErrorType: 0,
                                     ErrorReason: "Chat or messages doesn't exist"
@@ -62,7 +62,7 @@ exports.getMessages = function (request, response) {
                 } else {
                     response.send(JSON.stringify(
                         {
-                            IsGot: false,
+                            Success: false,
                             Content: null,
                             ErrorType: 3,
                             ErrorReason: "User isn't in chat"

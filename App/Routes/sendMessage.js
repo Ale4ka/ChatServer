@@ -8,52 +8,53 @@ exports.sendMessage = function (request, response) {
         if (err) throw err;
         let db = client.db("ezWebChat");
         let connectionInfo = {
-            Token: request.body["Token"],
-            Ip: request.body["Ip"]
+            Token: request.body["AccessToken"]
         };
         db.collection("Connections").findOne(connectionInfo, function (err, result) {
             if (err || result == null) {
                 response.send(JSON.stringify(
                     {
-                        IsSent: false,
+                        Success: false,
                         ErrorType: 1,
                         ErrorReason: "Wrong token"
                     }
                 ));
+                return;
             }
-            let userId = result["_id"];
+            let userId = result["Id"];
             db.collection("Users").findOne({_id: userId}, function (err, result) {
                 if (err || result == null) {
                     response.send(JSON.stringify(
                         {
-                            IsSent: false,
+                            Success: false,
                             ErrorType: 2,
                             ErrorReason: "Wrong token record"
                         }
                     ));
+                    return;
                 }
-                let chatId = request["ChatId"];
+                let chatId = request.body["ChatId"];
                 let messageInfo = {
-                    Content: request["Content"],
+                    Content: request.body["Content"],
                     From: userId,
                     DateTime: new Date(),
                     ChatId: chatId
                 };
                 if (chatId in result["Chats"]) {
-                    db.collection("Messages").insertOne(messageInfo, function (err, result) {
+                    db.collection("Chats").updateOne({_id: chatId}, {"$push": messageInfo}, function (err, result) {
                         if (err || result == null) {
                             response.send(JSON.stringify(
                                 {
-                                    IsSent: false,
+                                    Success: false,
                                     ErrorType: 3,
                                     ErrorReason: "Chat doesn't exist"
                                 }
-                            ))
+                            ));
                         }
                         else {
                             response.send(JSON.stringify(
                                 {
-                                    IsSent: true,
+                                    Success: true,
                                     ErrorType: 0,
                                     ErrorReason: null
                                 }
@@ -64,7 +65,7 @@ exports.sendMessage = function (request, response) {
                 } else {
                     response.send(JSON.stringify(
                         {
-                            IsSent: false,
+                            Success: false,
                             ErrorType: 3,
                             ErrorReason: "User isn't in chat"
                         }

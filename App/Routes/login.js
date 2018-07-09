@@ -11,13 +11,12 @@ exports.login = function (request, response) {
             Login: request.body["Login"],
             PasswordHash: request.body["PasswordHash"]
         };
-        let ip = request.body["Ip"];
         db.collection("Users").findOne(AuthInfo, function (err, result) {
             if (err || result == null) {
                 response.send(JSON.stringify(
                     {
                         Token: null,
-                        IsAuthorized: false,
+                        Success: false,
                         ErrorType: 1,
                         ErrorReason: "Wrong login/password"
                     }
@@ -28,7 +27,6 @@ exports.login = function (request, response) {
             let token = generateToken(16);
             let newIpConnection = {
                 Token: token,
-                Ip: ip,
                 Id: result["_id"]
             };
             db.collection("Connections").insertOne(newIpConnection, function (err, result) {
@@ -36,7 +34,7 @@ exports.login = function (request, response) {
                     response.send(JSON.stringify(
                         {
                             Token: null,
-                            IsAuthorized: false,
+                            Success: false,
                             ErrorType: 1,
                             ErrorReason: "Error at adding to connections"
                         }
@@ -45,7 +43,7 @@ exports.login = function (request, response) {
 
                 response.send(JSON.stringify({
                     Token: token,
-                    IsAuthorized: true,
+                    Success: true,
                     ErrorType: 0,
                     ErrorReason: null
                 }))

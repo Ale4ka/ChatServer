@@ -21,12 +21,12 @@ exports.register = function (request, response) {
             let registerResponse;
             if (err) {
                 registerResponse = {
-                    IsRegistered: false,
+                    Success: false,
                     ErrorReason: "Already exists"
                 };
             } else {
                 registerResponse = {
-                    IsRegistered: true,
+                    Success: true,
                     ErrorReason: null
                 };
             }

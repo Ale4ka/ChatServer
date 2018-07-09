@@ -22,8 +22,8 @@ app.get("/App/Styles/style.css", function (request, response) {
 
 app.post("/login", jsonParser, login.login);
 app.post("/register", jsonParser, register.register);
-app.post("/getMessages", jsonParser, getMessages.getMessages());
-app.post("/sendMessage", jsonParser, sendMessage.sendMessage());
+app.post("/getMessages", jsonParser, getMessages.getMessages);
+app.post("/sendMessage", jsonParser, sendMessage.sendMessage);
 
 app.listen(port);
 console.log("listen on port: ", port);
