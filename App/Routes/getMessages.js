@@ -1,7 +1,7 @@
 const mongoClient = require("mongodb");
 const mongoUrl = "mongodb://localhost:27017/";
 
-exports.sendMessage = function (request, response) {
+exports.getMessages = function (request, response) {
     if (!request.body) return response.sendStatus(400);
 
     mongoClient.connect(mongoUrl, {useNewUrlParser: true}, function (err, client) {
@@ -15,7 +15,8 @@ exports.sendMessage = function (request, response) {
             if (err || result == null) {
                 response.send(JSON.stringify(
                     {
-                        IsSent: false,
+                        IsGot: false,
+                        Content: null,
                         ErrorType: 1,
                         ErrorReason: "Wrong token"
                     }
@@ -26,45 +27,43 @@ exports.sendMessage = function (request, response) {
                 if (err || result == null) {
                     response.send(JSON.stringify(
                         {
-                            IsSent: false,
+                            IsGot: false,
+                            Content: null,
                             ErrorType: 2,
                             ErrorReason: "Wrong token record"
                         }
                     ));
                 }
                 let chatId = request["ChatId"];
-                let messageInfo = {
-                    Content: request["Content"],
-                    From: userId,
-                    DateTime: new Date(),
-                    ChatId: chatId
-                };
                 if (chatId in result["Chats"]) {
-                    db.collection("Messages").insertOne(messageInfo, function (err, result) {
+                    db.collection("Messages").find({ChatId: chatId}, function (err, result) {
                         if (err || result == null) {
                             response.send(JSON.stringify(
                                 {
-                                    IsSent: false,
-                                    ErrorType: 3,
-                                    ErrorReason: "Chat doesn't exist"
+                                    IsGot: false,
+                                    Content: null,
+                                    ErrorType: 4,
+                                    ErrorReason: "Chat or messages doesn't exist"
                                 }
-                            ))
-                        }
-                        else {
+                            ));
+                        } else {
+                            let messages = [];
+
                             response.send(JSON.stringify(
                                 {
-                                    IsSent: true,
+                                    IsGot: true,
+                                    Content: messages,
                                     ErrorType: 0,
-                                    ErrorReason: null
+                                    ErrorReason: "Chat or messages doesn't exist"
                                 }
                             ));
                         }
                     });
-
                 } else {
                     response.send(JSON.stringify(
                         {
-                            IsSent: false,
+                            IsGot: false,
+                            Content: null,
                             ErrorType: 3,
                             ErrorReason: "User isn't in chat"
                         }
