@@ -20,7 +20,7 @@ const getMessages = require('./App/Routes/getMessages.js');
 app.post("/login", jsonParser, login.login);
 app.post("/register", jsonParser, register.register);
 
-app.use(function f(req,res, next) {
+app.use(function f(req, res, next) {
 
     //request ip middlaware
 
@@ -28,12 +28,12 @@ app.use(function f(req,res, next) {
     next();
 });
 
-app.use(function f(request,response, next) {
+app.use(function f(request, response, next) {
 
     //Token auth middleware
 
     //Этот код будет выполняться для всех методов, а затем вызывать их
-    mongoClient.connect(mongoUrl, {useNewUrlParser: true}, function (err, client) {
+    mongoClient.connect(mongoUrl, { useNewUrlParser: true }, function (err, client) {
         if (err) throw err;
         let db = client.db("ezWebChat");
         let connectionInfo = {
@@ -52,24 +52,27 @@ app.use(function f(request,response, next) {
                 console.log("Auth failed");
                 return;
             }
+            else {
 
-            //Успешно
-            console.log("Auth success");
+                //Успешно
+                console.log("Auth success");
 
-            //Кладем найденный результат в реквест
-            request.conntectionResult = result;
+                //Кладем найденный результат в реквест
+                request.conntectionResult = result;
 
-            console.log(request.conntectionResult)
+                console.log(request.conntectionResult)
+
+                //Продолжаем
+                next();
+            }
 
         })
     });
-    //Продолжаем
-    next();
 });
 
 
 
-app.get("/", function(request, response){
+app.get("/", function (request, response) {
     response.sendfile("./App/Pages/debug.html");
 });
 
