@@ -103,13 +103,13 @@ exports.sendMessage = function (request, response) {
                 ChatId: chatId
             };
             if (chatId in result["Chats"]) {
-                db.collection("Messages").insertOne(messageInfo, function (err, result) {
+                db.collection("Chats").updateOne({ _id: chatId }, { "$push": messageInfo }, function (err, result) {
                     if (err || result == null) {
                         response.send(JSON.stringify(
                             {
                                 Success: false,
                                 ErrorType: 3,
-                                ErrorReason: "Server error"
+                                ErrorReason: "Chat doesn't exist"
                             }
                         ));
                     }
