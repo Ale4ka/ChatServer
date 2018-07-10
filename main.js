@@ -28,7 +28,7 @@ app.use(function f(req,res, next) {
     next();
 });
 
-app.use(function f(req,res, next) {
+app.use(function f(request,response, next) {
 
     //Token auth middleware
 
