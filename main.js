@@ -12,7 +12,14 @@ const login = require('./App/Routes/login.js');
 const sendMessage = require('./App/Routes/sendMessage.js');
 const getMessages = require('./App/Routes/getMessages.js');
 
+
+app.post("/login", jsonParser, login.login);
+app.post("/register", jsonParser, register.register);
+
 app.use(function f(req,res, next) {
+
+    //request ip middlaware
+
     console.log("New request from: " + res.connection.remoteAddress);
     next();
 });
@@ -25,8 +32,6 @@ app.get("/App/Styles/style.css", function (request, response) {
     response.sendfile("./App/Styles/style.css");
 });
 
-app.post("/login", jsonParser, login.login);
-app.post("/register", jsonParser, register.register);
 app.post("/getMessages", jsonParser, getMessages.getMessages);
 app.post("/sendMessage", jsonParser, sendMessage.sendMessage);
 
