@@ -16,10 +16,6 @@ const login = require('./App/Routes/login.js');
 const sendMessage = require('./App/Routes/sendMessage.js');
 const getMessages = require('./App/Routes/getMessages.js');
 
-
-app.post("/login", jsonParser, login.login);
-app.post("/register", jsonParser, register.register);
-
 app.use(function f(req, res, next) {
 
     //request ip middlaware
@@ -27,6 +23,9 @@ app.use(function f(req, res, next) {
     console.log("New request from: " + res.connection.remoteAddress);
     next();
 });
+
+app.post("/login", jsonParser, login.login);
+app.post("/register", jsonParser, register.register);
 
 app.use(function f(request, response, next) {
 
