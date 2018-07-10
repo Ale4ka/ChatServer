@@ -50,6 +50,7 @@ app.use(function f(request, response, next) {
                 ));
 
                 console.log("Auth failed");
+                response.set("Connection", "close");                
                 return;
             }
             else {
