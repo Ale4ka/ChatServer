@@ -8,8 +8,7 @@ exports.getMessages = function (request, response) {
         if (err) throw err;
         let db = client.db("ezWebChat");
         let connectionInfo = {
-            Token: request.body["Token"],
-            Ip: request.body["Ip"]
+            Token: request.body["Token"]
         };
         db.collection("Connections").findOne(connectionInfo, function (err, result) {
             if (err || result == null) {
@@ -47,12 +46,11 @@ exports.getMessages = function (request, response) {
                                 }
                             ));
                         } else {
-                            let messages = [];
 
                             response.send(JSON.stringify(
                                 {
                                     Success: true,
-                                    Content: messages,
+                                    // Content: messages,
                                     ErrorType: 0,
                                     ErrorReason: "Chat or messages doesn't exist"
                                 }
