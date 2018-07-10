@@ -52,10 +52,15 @@ app.use(function f(request,response, next) {
                 console.log("Auth failed");
                 return;
             }
+
+            //Успешно
+            console.log("Auth success");
+
+            //Кладем найденный результат в реквест
+            request.root = result;
+
         })
     });
-
-    console.log("Auth success");
     //Продолжаем
     next();
 });

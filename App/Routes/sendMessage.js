@@ -10,6 +10,9 @@ exports.sendMessage = function (request, response) {
         let connectionInfo = {
             Token: request.body["AccessToken"]
         };
+
+        var result = request.root;
+        let userId = result["Id"];
         db.collection("Users").findOne({ _id: userId }, function (err, result) {
             if (err || result == null) {
                 response.send(JSON.stringify(
