@@ -2,6 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
+//База данных
+const mongoClient = require("mongodb");
+const mongoUrl = "mongodb://localhost:27017/";
+
 
 const port = 1234;
 const jsonParser = bodyParser.json();
@@ -23,6 +27,40 @@ app.use(function f(req,res, next) {
     console.log("New request from: " + res.connection.remoteAddress);
     next();
 });
+
+app.use(function f(req,res, next) {
+
+    //Token auth middleware
+
+    //Этот код будет выполняться для всех методов, а затем вызывать их
+    mongoClient.connect(mongoUrl, {useNewUrlParser: true}, function (err, client) {
+        if (err) throw err;
+        let db = client.db("ezWebChat");
+        let connectionInfo = {
+            Token: request.body["AccessToken"]
+        };
+        db.collection("Connections").findOne(connectionInfo, function (err, result) {
+            if (err || result == null) {
+                response.send(JSON.stringify(
+                    {
+                        Success: false,
+                        ErrorType: 1,
+                        ErrorReason: "Wrong token"
+                    }
+                ));
+
+                console.log("Auth failed");
+                return;
+            }
+        })
+    });
+
+    console.log("Auth success");
+    //Продолжаем
+    next();
+});
+
+
 
 app.get("/", function(request, response){
     response.sendfile("./App/Pages/debug.html");
