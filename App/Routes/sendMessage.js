@@ -9,10 +9,11 @@ exports.sendMessage = function (request, response) {
         let db = client.db("ezWebChat");
         let connectionInfo = {
             Token: request.body["AccessToken"]
-        };
+        };       
 
         var result = request.conntectionResult;
         let userId = result["Id"];
+        
         db.collection("Users").findOne({ _id: userId }, function (err, result) {
             if (err || result == null) {
                 response.send(JSON.stringify(

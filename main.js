@@ -59,6 +59,8 @@ app.use(function f(request,response, next) {
             //Кладем найденный результат в реквест
             request.conntectionResult = result;
 
+            console.log(request.conntectionResult)
+
         })
     });
     //Продолжаем
