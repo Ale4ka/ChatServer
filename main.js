@@ -12,6 +12,11 @@ const login = require('./App/Routes/login.js');
 const sendMessage = require('./App/Routes/sendMessage.js');
 const getMessages = require('./App/Routes/getMessages.js');
 
+app.use(function f(req,res, next) {
+    console.log("New request from: " + res.connection.remoteAddress);
+    next();
+});
+
 app.get("/", function(request, response){
     response.sendfile("./App/Pages/debug.html");
 });
