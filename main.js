@@ -14,6 +14,7 @@ const login = require('./App/Routes/login.js');
 const sendMessage = require('./App/Routes/sendMessage.js');
 const getMessages = require('./App/Routes/getMessages.js');
 const authMiddleware = require('./App/Routes/AuthMiddleware.js');
+const LongPoll = require('./App/Routes/LongPoll.js');
 
 app.use(function f(req, res, next) {
         //request ip middlaware
@@ -21,13 +22,6 @@ app.use(function f(req, res, next) {
     console.log("New request from: " + res.connection.remoteAddress);
     next();
 });
-
-app.post("/login", jsonParser, login.login);
-app.post("/register", jsonParser, register.register);
-
-app.use(jsonParser, authMiddleware.Auth);
-
-
 
 app.get("/", function (request, response) {
     response.sendfile("./App/Pages/debug.html");
@@ -37,8 +31,16 @@ app.get("/App/Styles/style.css", function (request, response) {
     response.sendfile("./App/Styles/style.css");
 });
 
+app.post("/login", jsonParser, login.login);
+app.post("/register", jsonParser, register.register);
+
+//Auth
+app.use(jsonParser, authMiddleware.Auth);
+
 app.post("/getMessages", jsonParser, getMessages.getMessages);
 app.post("/sendMessage", jsonParser, sendMessage.sendMessage);
+
+app.post("/LongPoll", jsonParser, LongPoll.getNewMesseges);
 
 app.listen(port);
 console.log("listen on port: ", port);
