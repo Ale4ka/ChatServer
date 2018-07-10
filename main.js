@@ -17,8 +17,7 @@ const sendMessage = require('./App/Routes/sendMessage.js');
 const getMessages = require('./App/Routes/getMessages.js');
 
 app.use(function f(req, res, next) {
-
-    //request ip middlaware
+        //request ip middlaware
 
     console.log("New request from: " + res.connection.remoteAddress);
     next();
@@ -27,7 +26,7 @@ app.use(function f(req, res, next) {
 app.post("/login", jsonParser, login.login);
 app.post("/register", jsonParser, register.register);
 
-app.use(function f(request, response, next) {
+app.use(jsonParser, function f(request, response, next) {
 
     //Token auth middleware
 
