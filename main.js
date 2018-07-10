@@ -57,7 +57,7 @@ app.use(function f(request,response, next) {
             console.log("Auth success");
 
             //Кладем найденный результат в реквест
-            request.root = result;
+            request.conntectionResult = result;
 
         })
     });

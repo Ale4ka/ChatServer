@@ -11,7 +11,7 @@ exports.sendMessage = function (request, response) {
             Token: request.body["AccessToken"]
         };
 
-        var result = request.root;
+        var result = request.conntectionResult;
         let userId = result["Id"];
         db.collection("Users").findOne({ _id: userId }, function (err, result) {
             if (err || result == null) {
