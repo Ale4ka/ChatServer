@@ -16,6 +16,8 @@ const getMessages = require('./App/Routes/getMessages.js');
 const authMiddleware = require('./App/Routes/AuthMiddleware.js');
 const LongPoll = require('./App/Routes/LongPoll.js');
 
+GLOBAL.NewMessages = new Array();
+
 app.use(function f(req, res, next) {
         //request ip middlaware
 
@@ -37,10 +39,10 @@ app.post("/register", jsonParser, register.register);
 //Auth
 app.use(jsonParser, authMiddleware.Auth);
 
-app.post("/getMessages", jsonParser, getMessages.getMessages);
+app.post("/getHistoryMessages", jsonParser, getMessages.getMessages);
 app.post("/sendMessage", jsonParser, sendMessage.sendMessage);
 
-app.post("/LongPoll", jsonParser, LongPoll.getNewMesseges);
+app.post("/getNewMessages", jsonParser, LongPoll.getNewMesseges);
 
 app.listen(port);
 console.log("listen on port: ", port);

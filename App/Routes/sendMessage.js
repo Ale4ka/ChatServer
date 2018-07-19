@@ -13,7 +13,7 @@ exports.sendMessage = function (request, response) {
 
         var result = request.conntectionResult;
         let userId = result["Id"];
-        
+
         db.collection("Users").findOne({ _id: userId }, function (err, result) {
             if (err || result == null) {
                 response.send(JSON.stringify(
@@ -44,6 +44,7 @@ exports.sendMessage = function (request, response) {
                         ));
                     }
                     else {
+                        GLOBAL.NewMessages.push(messageInfo);
                         response.send(JSON.stringify(
                             {
                                 Success: true,
