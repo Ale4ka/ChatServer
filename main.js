@@ -16,9 +16,7 @@ const getMessages = require('./App/Routes/getMessages.js');
 const authMiddleware = require('./App/Routes/AuthMiddleware.js');
 const LongPoll = require('./App/Routes/LongPoll.js');
 
-GLOBAL.NewMessages = new Array();
-
-app.use(function f(req, res, next) {
+app.use(function (req, res, next) {
         //request ip middlaware
 
     console.log("New request from: " + res.connection.remoteAddress);

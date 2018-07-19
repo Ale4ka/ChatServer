@@ -33,7 +33,7 @@ exports.Auth = function (request, response, next) {
 
                 //Успешно
                 console.log("Auth success");
-
+                
                 //Кладем найденный результат в реквест
                 request.conntectionResult = result;
 
