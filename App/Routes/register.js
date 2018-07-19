@@ -8,15 +8,12 @@ exports.register = function (request, response) {
     if (!request.body) return response.sendStatus(400);
 
     let newUser = {
-        Login: request.body["Login"],
+        Login: request.body["Login"].toLowerCase(),
         PasswordHash: request.body["PasswordHash"],
         Name: request.body["Name"]
     };
 
-
-    mongoClient.connect(mongoUrl, {useNewUrlParser: true}, function (err, client) {
-        if (err) throw err;
-        let db = client.db("ezWebChat");
+        let db = request.db;
         db.collection("Users").insertOne(newUser, function (err, res) {
             let registerResponse;
             if (err) {
@@ -33,8 +30,5 @@ exports.register = function (request, response) {
             response.send(JSON.stringify(registerResponse));
             client.close();
         });
-
-    });
-
 };
 
