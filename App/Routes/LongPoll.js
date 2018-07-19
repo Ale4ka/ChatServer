@@ -1,8 +1,9 @@
-exports.getNewMesseges = function(req,res) {
+exports.getNewMesseges = function (req, res) {
 
-var millisecondsToWait = 10000;
-setTimeout(function() {
-    res.send("KEK!");
-}, millisecondsToWait);
+    while (GLOBAL.NewMessages.length == 0) {
+        setTimeout(function (){},50);
+    }
 
+    res.send(JSON.stringify(GLOBAL.NewMessages));
+    GLOBAL.NewMessages = new Array();
 }
