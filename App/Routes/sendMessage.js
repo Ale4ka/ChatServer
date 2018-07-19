@@ -1,69 +1,70 @@
-const mongoClient = require("mongodb");
-const mongoUrl = "mongodb://localhost:27017/";
+var response,
+    request,
+    db;
 
-exports.sendMessage = function (request, response) {
-    if (!request.body) return response.sendStatus(400);
+exports.sendMessage = function (req, res) {
+    if (!req.body) return res.sendStatus(400);
 
-    mongoClient.connect(mongoUrl, { useNewUrlParser: true }, function (err, client) {
-        if (err) throw err;
-        let db = client.db("ezWebChat");
-        let connectionInfo = {
-            Token: request.body["AccessToken"]
-        };       
+    console.log("=> SENDMESSAGE");
 
-        var result = request.conntectionResult;
-        let userId = result["Id"];
+    //Инициализация полей
+    response = res;
+    request = req;
+    db = request.db;
 
-        db.collection("Users").findOne({ _id: userId }, function (err, result) {
-            if (err || result == null) {
-                response.send(JSON.stringify(
-                    {
-                        Success: false,
-                        ErrorType: 2,
-                        ErrorReason: "Wrong token record"
-                    }
-                ));
-                return;
+    var user = request.user;
+
+    //console.log(user);
+
+    let chatId = request.body["ChatId"];
+    let messageInfo = {
+        Content: request.body["Content"],
+        From: user["_id"],
+        FromName : user["Name"],
+        DateTime: new Date(),
+        ChatId: chatId
+    };
+    if (chatId in request.user["Chats"]) {
+        //Добавляем сообщение
+        db.collection("Chats").updateOne({ _id: chatId }, { "$push": { "Messages" : messageInfo} }, PushMessage);
+
+    } else {
+
+        response.send(JSON.stringify({
+            Success: false,
+            ErrorType: 3,
+            ErrorReason: "User isn't in chat"
+        }
+        ));
+        return response.end();
+    }
+
+
+}
+
+
+//Добавляем сообщение
+function PushMessage(err, result) {
+    //Если ошибки
+    if (err || result == null) {
+        response.send(JSON.stringify(
+            {
+                Success: false,
+                ErrorType: 3,
+                ErrorReason: "Chat doesn't exist"
             }
-            let chatId = request.body["ChatId"];
-            let messageInfo = {
-                Content: request.body["Content"],
-                From: userId,
-                DateTime: new Date(),
-                ChatId: chatId
-            };
-            if (chatId in result["Chats"]) {
-                db.collection("Chats").updateOne({ _id: chatId }, { "$push": messageInfo }, function (err, result) {
-                    if (err || result == null) {
-                        response.send(JSON.stringify(
-                            {
-                                Success: false,
-                                ErrorType: 3,
-                                ErrorReason: "Chat doesn't exist"
-                            }
-                        ));
-                    }
-                    else {
-                        GLOBAL.NewMessages.push(messageInfo);
-                        response.send(JSON.stringify(
-                            {
-                                Success: true,
-                                ErrorType: 0,
-                                ErrorReason: null
-                            }
-                        ));
-                    }
-                });
-
-            } else {
-                response.send(JSON.stringify(
-                    {
-                        Success: false,
-                        ErrorType: 3,
-                        ErrorReason: "User isn't in chat"
-                    }
-                ));
+        ));
+        return response.end();
+    }
+    else {
+        //Вот это финалочка. Удачный вариант
+        response.send(JSON.stringify(
+            {
+                Success: true,
+                ErrorType: 0,
+                ErrorReason: null
             }
-        });
-    });
-};
+        ));
+        return response.end();
+    }
+}

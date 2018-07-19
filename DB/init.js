@@ -9,25 +9,25 @@ db.Users.createIndex(
     {unique: true}
 );
 db.Users.insertOne({
-    "Login": "Elijah",
+    "Login": "elijah",
     "PasswordHash": "098f6bcd4621d373cade4e832627b4f6",
     "Name": "Elijah Kollegov",
     "Chats": [0, 1, 2]
 })
 db.Users.insertOne({
-    "Login": "Orfac",
+    "Login": "orfac",
     "PasswordHash": "098f6bcd4621d373cade4e832627b4f6",
     "Name": "Arseniy",
     "Chats": [0, 1, 2]
 })
 db.Users.insertOne({
-    "Login": "Ejok",
+    "Login": "ejok",
     "PasswordHash": "0098f6bcd4621d373cade4e832627b4f6",
     "Name": "Egor",
     "Chats": [0, 1, 2]
 })
 db.Users.insertOne({
-    "Login": "SmeshMike",
+    "Login": "smeshmike",
     "PasswordHash": "098f6bcd4621d373cade4e832627b4f6",
     "Name": "Misha",
     "Chats": [0, 1, 2]

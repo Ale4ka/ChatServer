@@ -1,48 +1,66 @@
-//База данных
-const mongoClient = require("mongodb");
-const mongoUrl = "mongodb://localhost:27017/";
+var response,
+    request,
+    db;
 
+exports.Auth = function (req, res, next) {
 
-exports.Auth = function (request, response, next) {
+    console.log("=> AUTH");
 
-    //Token auth middleware
+    //Инициализация полей
+    response = res;
+    request = req;
+    db = request.db;
 
-    //Этот код будет выполняться для всех методов, а затем вызывать их
-    mongoClient.connect(mongoUrl, { useNewUrlParser: true }, function (err, client) {
-        if (err) throw err;
-        let db = client.db("ezWebChat");
-        let connectionInfo = {
-            Token: request.body["AccessToken"]
-        };
-        db.collection("Connections").findOne(connectionInfo, function (err, result) {
-            if (err || result == null) {
-                response.send(JSON.stringify(
-                    {
-                        Success: false,
-                        ErrorType: 1,
-                        ErrorReason: "Wrong token"
-                    }
-                ));
+    let connectionInfo = {
+        Token: request.body["AccessToken"]
+    };
 
-                console.log("Auth failed");
+    //Ищем токен в подключениях
+    db.collection("Connections").findOne(connectionInfo, function (err, result) {
+        if (err || result == null) {
+            //Не найден => выкидываем
+            response.send(JSON.stringify(
+                {
+                    Success: false,
+                    ErrorType: 1,
+                    ErrorReason: "Wrong token"
+                }
+            ));
 
-                response.set("Connection", "close");                                
-                return;
-            }
-            else {
+            console.log("Auth failed #1");
+            return response.end();
+        }
+        else {
+            //Нашли коннекшн, проверяем пользователя
+            let userId = result["Id"];
 
-                //Успешно
-                console.log("Auth success");
-                
-                //Кладем найденный результат в реквест
-                request.conntectionResult = result;
+            db.collection("Users").findOne({ _id: userId }, function (err, user) {
+                if (err || user == null) {
+                    //Не нашли
+                    response.send(JSON.stringify(
+                        {
+                            Success: false,
+                            ErrorType: 2,
+                            ErrorReason: "Wrong token record"
+                        }
+                    ));
+                    console.log("Auth failed #2");
+                    return response.end();
+                }
 
-                console.log(request.conntectionResult)
+                else {
 
-                //Продолжаем
-                next();
-            }
+                    //Добавляем пользователя
+                    request.user = user;
 
-        })
-    });
+                    //TODO: выпилить после дебага
+                    //console.log(req.user);
+                    //Успешно
+                    console.log("Auth success");
+                    //Продолжаем
+                    next();
+                }
+            });
+        }
+    })
 }

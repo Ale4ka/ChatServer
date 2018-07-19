@@ -1,75 +1,60 @@
-const mongoClient = require("mongodb");
-const mongoUrl = "mongodb://localhost:27017/";
+var response,
+    request,
+    db;
 
-exports.getMessages = function (request, response) {
-    if (!request.body) return response.sendStatus(400);
+exports.getMessagesHistory = function (req, res) {
+    if (!req.body) return res.sendStatus(400);
 
-    mongoClient.connect(mongoUrl, {useNewUrlParser: true}, function (err, client) {
-        if (err) throw err;
-        let db = client.db("ezWebChat");
-        let connectionInfo = {
-            Token: request.body["Token"],
-            Ip: request.body["Ip"]
-        };
-        db.collection("Connections").findOne(connectionInfo, function (err, result) {
-            if (err || result == null) {
-                response.send(JSON.stringify(
-                    {
-                        Success: false,
-                        Content: null,
-                        ErrorType: 1,
-                        ErrorReason: "Wrong token"
-                    }
-                ));
+    console.log("=> GETMESSAGEHISTORY");
+
+    //Инициализация полей
+    response = res;
+    request = req;
+    db = request.db;
+
+    var user = request.user;
+
+    let chatId = request.body["ChatId"];
+    if (chatId in user["Chats"]) {
+
+        db.collection("Chats").findOne({ _id: chatId }, FindAllMessages);
+
+    } else {
+        //Не туда лезешь! 
+        response.send(JSON.stringify(
+            {
+                Success: false,
+                Content: null,
+                ErrorType: 3,
+                ErrorReason: "User isn't in chat"
             }
-            let userId = result["_id"];
-            db.collection("Users").findOne({_id: userId}, function (err, result) {
-                if (err || result == null) {
-                    response.send(JSON.stringify(
-                        {
-                            Success: false,
-                            Content: null,
-                            ErrorType: 2,
-                            ErrorReason: "Wrong token record"
-                        }
-                    ));
-                }
-                let chatId = request["ChatId"];
-                if (chatId in result["Chats"]) {
-                    db.collection("Messages").find({ChatId: chatId}, function (err, result) {
-                        if (err || result == null) {
-                            response.send(JSON.stringify(
-                                {
-                                    Success: false,
-                                    Content: null,
-                                    ErrorType: 4,
-                                    ErrorReason: "Chat or messages doesn't exist"
-                                }
-                            ));
-                        } else {
-                            let messages = [];
-
-                            response.send(JSON.stringify(
-                                {
-                                    Success: true,
-                                    Content: messages,
-                                    ErrorType: 0,
-                                    ErrorReason: "Chat or messages doesn't exist"
-                                }
-                            ));
-                        }
-                    });
-                } else {
-                    response.send(JSON.stringify(
-                        {
-                            Success: false,
-                            Content: null,
-                            ErrorType: 3,
-                            ErrorReason: "User isn't in chat"
-                        }
-                    ));
-                }
-            });
-        });
-    });
+        ));
+        return response.end();
+    }
 };
+
+function FindAllMessages(err, chat) {
+    if (err || chat == null) {
+        //Нет чата
+        response.send(JSON.stringify(
+            {
+                Success: false,
+                Content: null,
+                ErrorType: 4,
+                ErrorReason: "Chat or messages doesn't exist"
+            }
+        ));
+        return response.end();
+    } else {
+        //Отправляем посылку
+        response.send(JSON.stringify(
+            {
+                Success: true,
+                Content: chat["Messages"],
+                ErrorType: 0,
+                ErrorReason: null
+            }
+        ));
+        return response.end();
+    }
+}

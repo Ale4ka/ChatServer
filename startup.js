@@ -54,10 +54,10 @@ mongoClient.connect(mongoUrl, { useNewUrlParser: true }, function(err, client) {
         app.post("/register", register.register);
         
         //Auth
-        //app.use(authMiddleware.Auth);
+        app.use(authMiddleware.Auth);
         
-        //app.post("/getHistoryMessages", getMessages.getMessages);
-        //app.post("/sendMessage", sendMessage.sendMessage);
+        app.post("/getMessagesHistory", getMessages.getMessagesHistory);
+        app.post("/sendMessage", sendMessage.sendMessage);
         
         //app.post("/getNewMessages", LongPoll.getNewMesseges);
         
