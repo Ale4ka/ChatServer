@@ -17,6 +17,7 @@ const login = require('./App/Routes/login.js');
 const sendMessage = require('./App/Routes/sendMessage.js');
 const getMessages = require('./App/Routes/getMessages.js');
 const authMiddleware = require('./App/Routes/AuthMiddleware.js');
+const messageUpdate = require('./App/Routes/LongPoll.js');
 
 //Приложение
 const app = express();
@@ -59,35 +60,38 @@ mongoClient.connect(mongoUrl, { useNewUrlParser: true }, function (err, client) 
         //Auth
         app.use(authMiddleware.Auth);
 
-        app.post("/getMessagesHistory", getMessages.getMessagesHistory);
+        app.post("/getMessagesHistory", authMiddleware.Auth, getMessages.getMessagesHistory);
         app.post("/sendMessage", sendMessage.sendMessage);
 
-        //Выделяем новый сервер
-        app.post("/getLongPollServer", function (req, res) {
 
-            longPoll.listen(longPollPort, function () {
-                console.log("LongPoll on: ", longPollPort);
-            });
 
-            res.send(JSON.stringify(
-                {
-                    Success: true,
-                    Content: null,
-                    LongPollPort: longPollPort
-                }
-            ));
-
-            longPollPort++;
-        });
-
+        longPoll.use(jsonParser);
         longPoll.use(function (req, res, next) {
             req.db = client.db("ezWebChat");
             next();
         });
 
         longPoll.use(authMiddleware.Auth);
-        longPoll.post("/GetNewMessages", function (req, res) {
+        longPoll.post("/getNewMessages", messageUpdate.getNewMesseges);
 
+        //Выделяем новый сервер
+        app.post("/getLongPollServer", function (req, res) {
+
+            longPoll.listen(longPollPort, function () {
+
+                res.send(JSON.stringify(
+                    {
+                        Success: true,
+                        Content: null,
+                        LongPollPort: longPollPort
+                    }
+                ));
+
+                console.log("LongPoll on: ", longPollPort);                
+                longPollPort++;
+
+                return res.end();
+            });
         });
 
         http.createServer(app).listen(port, function () {

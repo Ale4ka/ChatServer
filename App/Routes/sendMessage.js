@@ -27,6 +27,7 @@ exports.sendMessage = function (req, res) {
     if (chatId in request.user["Chats"]) {
         //Добавляем сообщение
         db.collection("Chats").updateOne({ _id: chatId }, { "$push": { "Messages" : messageInfo} }, PushMessage);
+        db.collection("Chats").updateOne({ _id: chatId }, { "$push": { "NewMessages" : messageInfo} });
 
     } else {
 
@@ -65,6 +66,7 @@ function PushMessage(err, result) {
                 ErrorReason: null
             }
         ));
+
         return response.end();
     }
 }
